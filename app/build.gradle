@@ -1,0 +1,77 @@
+String moduleName = project.name
+
+log(moduleName, "apply as application")
+apply plugin: 'com.android.application'
+
+def static buildTime() {
+    return new Date().format("yyyyMMddHHmm", TimeZone.getTimeZone("GMT+08"))
+}
+
+def log(String tag, String msg) {
+    println("ClingDemo-" + tag + "-config: " + msg)
+}
+
+android {
+    compileSdkVersion rootProject.ext.COMPILE_SDK_VERSION
+    buildToolsVersion rootProject.ext.BUILDTOOLS_VERSION
+    //resourcePrefix 保证资源命名的唯一性,只能限定Xml资源,并不能限定图片资源
+//    resourcePrefix moduleName+"_"
+    defaultConfig {
+        minSdkVersion rootProject.ext.MIN_SDK_VERSION
+        targetSdkVersion rootProject.ext.TARGET_SDK_VERSION
+        applicationId "com.jeff.upnp.clingdemo"
+        versionCode 1
+        versionName "1.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            jniDebuggable true
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            renderscriptDebuggable true
+        }
+        release {
+            //开启代码压缩、混淆
+            minifyEnabled true
+            //开启zipalign(字节码对齐)优化
+            zipAlignEnabled true
+            //开启资源压缩，去除无用的resource文件
+            shrinkResources true
+            debuggable false
+            renderscriptDebuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            // 设置输出apk名称
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    //格式：应用名称_v版本名称_版本code_打包日期_targetSdk_buildType.apk
+                    outputFileName = "ClingDemo_v${variant.versionName}_${variant.versionCode}_${buildTime()}" +
+                            "_target${defaultConfig.targetSdkVersion.apiLevel}_${variant.buildType.name}.apk"
+                }
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.JAVA_VERSION
+        targetCompatibility rootProject.ext.JAVA_VERSION
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation rootProject.ext.dependencies["appcompat_v7"]
+    implementation project(':cling-android')
+
+    androidTestImplementation rootProject.ext.dependencies["runner"]
+    androidTestImplementation rootProject.ext.dependencies["espresso"]
+    testImplementation rootProject.ext.dependencies["junit"]
+}

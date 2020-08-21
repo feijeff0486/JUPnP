@@ -1,0 +1,66 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply from: rootProject.file('gradle/config.gradle')
+
+buildscript {
+
+    repositories {
+        if (enableAliyun.toBoolean()) {
+            println('[buildscript::repositories] enable aliyun repo mirror.')
+            maven { url 'https://maven.aliyun.com/repository/public' }
+            maven { url 'https://maven.aliyun.com/repository/google' }
+            maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        }
+
+        if (enableBintray.toBoolean()) {
+            println('[buildscript::repositories] enable maven[https://oss.sonatype.org/content/repositories/snapshots/]')
+            println('[buildscript::repositories] enable maven[http://dl.bintray.com/jetbrains/intellij-plugin-service]')
+            maven {
+                url "https://oss.sonatype.org/content/repositories/snapshots/"
+            }
+            maven {
+                url 'http://dl.bintray.com/jetbrains/intellij-plugin-service'
+            }
+        }
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://maven.google.com' }
+        maven { url 'https://jitpack.io' }
+        maven { url 'https://dl.bintray.com/feijeff0486/JFramework/' }
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.6.3'
+
+        if (enableBintray.toBoolean()) {
+            println('[buildscript::dependencies] enable plugin[gradle-bintray-plugin,android-maven-gradle-plugin]')
+            classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
+            classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+        }
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        if (enableAliyun.toBoolean()) {
+            println('[allprojects::repositories] enable aliyun repo mirror.')
+            maven { url 'https://maven.aliyun.com/repository/public' }
+            maven { url 'https://maven.aliyun.com/repository/google' }
+            maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        }
+        google()
+        jcenter()
+        maven { url 'https://dl.bintray.com/feijeff0486/JFramework/' }
+        maven { url 'https://jitpack.io' }
+        maven {
+            url 'http://www.idescout.com/maven/repo/'
+            name 'IDEScout, Inc.'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

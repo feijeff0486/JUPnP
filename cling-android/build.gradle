@@ -1,0 +1,20 @@
+ext {
+    bintrayName = 'cling-android'
+    artifact = bintrayName
+    libraryName = 'UPnP cling-android library'
+    libraryDescription = 'Provide cling-android support.'
+    libraryVersionCode = upnp_cling_android_version_code
+    libraryVersionName = upnp_cling_android_version_name
+}
+apply from: rootProject.file('gradle/build_library.gradle')
+
+android {
+    defaultConfig {
+        versionCode libraryVersionCode.asType(Integer.class)
+        versionName libraryVersionName
+    }
+}
+
+dependencies {
+api project(path: ':cling-core')
+}
