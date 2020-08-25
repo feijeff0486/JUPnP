@@ -109,6 +109,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
     	return true;
     }
 
+    @Override
     public void logInterfaceInformation() {
         synchronized (networkInterfaces) {
             if(networkInterfaces.isEmpty()) {
@@ -125,6 +126,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         }
     }
 
+    @Override
     public InetAddress getMulticastGroup() {
         try {
             return InetAddress.getByName(Constants.IPV4_UPNP_MULTICAST_GROUP);
@@ -133,14 +135,17 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         }
     }
 
+    @Override
     public int getMulticastPort() {
         return Constants.UPNP_MULTICAST_PORT;
     }
 
+    @Override
     public int getStreamListenPort() {
         return streamListenPort;
     }
 
+    @Override
     public Iterator<NetworkInterface> getNetworkInterfaces() {
         return new Iterators.Synchronized<NetworkInterface>(networkInterfaces) {
             @Override
@@ -152,6 +157,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         };
     }
 
+    @Override
     public Iterator<InetAddress> getBindAddresses() {
         return new Iterators.Synchronized<InetAddress>(bindAddresses) {
             @Override
@@ -163,10 +169,12 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         };
     }
 
+    @Override
     public boolean hasUsableNetwork() {
         return networkInterfaces.size() > 0 && bindAddresses.size() > 0;
     }
 
+    @Override
     public byte[] getHardwareAddress(InetAddress inetAddress) {
         try {
             NetworkInterface iface = NetworkInterface.getByInetAddress(inetAddress);
@@ -183,6 +191,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         }
     }
 
+    @Override
     public InetAddress getBroadcastAddress(InetAddress inetAddress) {
         synchronized (networkInterfaces) {
             for (NetworkInterface iface : networkInterfaces) {
@@ -196,6 +205,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         return null;
     }
 
+    @Override
     public Short getAddressNetworkPrefixLength(InetAddress inetAddress) {
         synchronized (networkInterfaces) {
             for (NetworkInterface iface : networkInterfaces) {
@@ -211,6 +221,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
         return null;
     }
 
+    @Override
     public InetAddress getLocalAddress(NetworkInterface networkInterface, boolean isIPv6, InetAddress remoteAddress) {
 
         // First try to find a local IP that is in the same subnet as the remote IP

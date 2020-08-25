@@ -105,10 +105,12 @@ public class RouterImpl implements Router {
         return disable();
     }
 
+    @Override
     public UpnpServiceConfiguration getConfiguration() {
         return configuration;
     }
 
+    @Override
     public ProtocolFactory getProtocolFactory() {
         return protocolFactory;
     }
@@ -215,6 +217,7 @@ public class RouterImpl implements Router {
         }
     }
 
+    @Override
     public List<NetworkAddress> getActiveStreamServers(InetAddress preferredAddress) throws RouterException {
         lock(readLock);
         try {
@@ -262,6 +265,7 @@ public class RouterImpl implements Router {
      *
      * @param msg The received datagram message.
      */
+    @Override
     public void received(IncomingDatagramMessage msg) {
         if (!enabled) {
             log.fine("Router disabled, ignoring incoming message: " + msg);
@@ -288,6 +292,7 @@ public class RouterImpl implements Router {
      *
      * @param stream The received {@link org.fourthline.cling.transport.spi.UpnpStream}.
      */
+    @Override
     public void received(UpnpStream stream) {
         if (!enabled) {
             log.fine("Router disabled, ignoring incoming: " + stream);
@@ -302,6 +307,7 @@ public class RouterImpl implements Router {
      *
      * @param msg The UDP datagram message to send.
      */
+    @Override
     public void send(OutgoingDatagramMessage msg) throws RouterException {
         lock(readLock);
         try {
@@ -324,6 +330,7 @@ public class RouterImpl implements Router {
      * @return The return value of the {@link org.fourthline.cling.transport.spi.StreamClient#sendRequest(StreamRequestMessage)}
      *         method or <code>null</code> if no <code>StreamClient</code> is available.
      */
+    @Override
     public StreamResponseMessage send(StreamRequestMessage msg) throws RouterException {
         lock(readLock);
         try {
@@ -356,6 +363,7 @@ public class RouterImpl implements Router {
      *
      * @param bytes The byte payload of the UDP datagram.
      */
+    @Override
     public void broadcast(byte[] bytes) throws RouterException {
         lock(readLock);
         try {

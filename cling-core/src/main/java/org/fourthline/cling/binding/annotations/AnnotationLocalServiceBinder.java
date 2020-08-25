@@ -57,6 +57,7 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
 
     private static Logger log = Logger.getLogger(AnnotationLocalServiceBinder.class.getName());
 
+    @Override
     public LocalService read(Class<?> clazz) throws LocalServiceBindingException {
         log.fine("Reading and binding annotations of service implementation class: " + clazz);
 
@@ -85,6 +86,7 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
         }
     }
 
+    @Override
     public LocalService read(Class<?> clazz, ServiceId id, ServiceType type,
                              boolean supportsQueryStateVariables, Class[] stringConvertibleTypes) throws LocalServiceBindingException {
         return read(clazz, id, type, supportsQueryStateVariables, new HashSet<>(Arrays.asList(stringConvertibleTypes)));

@@ -48,6 +48,7 @@ public class ReceivingSearchResponse extends ReceivingAsync<IncomingSearchRespon
         super(upnpService, new IncomingSearchResponse(inputMessage));
     }
 
+    @Override
     protected void execute() throws RouterException {
 
         if (!getInputMessage().isSearchResponseMessage()) {

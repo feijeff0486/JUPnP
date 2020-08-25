@@ -383,6 +383,7 @@ public class DefaultUpnpServiceConfiguration implements UpnpServiceConfiguration
             group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
         }
 
+        @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(
                     group, r,

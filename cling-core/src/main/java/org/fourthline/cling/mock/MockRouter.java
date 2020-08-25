@@ -114,18 +114,22 @@ public class MockRouter implements Router {
         }
     }
 
+    @Override
     public void received(IncomingDatagramMessage msg) {
         incomingDatagramMessages.add(msg);
     }
 
+    @Override
     public void received(UpnpStream stream) {
         receivedUpnpStreams.add(stream);
     }
 
+    @Override
     public void send(OutgoingDatagramMessage msg) throws RouterException {
         outgoingDatagramMessages.add(msg);
     }
 
+    @Override
     public StreamResponseMessage send(StreamRequestMessage msg) throws RouterException {
         sentStreamRequestMessages.add(msg);
         counter++;
@@ -134,6 +138,7 @@ public class MockRouter implements Router {
             : getStreamResponseMessage(msg);
     }
 
+    @Override
     public void broadcast(byte[] bytes) {
         broadcastedBytes.add(bytes);
     }

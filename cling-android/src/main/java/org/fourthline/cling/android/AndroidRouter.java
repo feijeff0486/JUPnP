@@ -250,7 +250,7 @@ public class AndroidRouter extends RouterImpl {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if (!intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION))
+            if (!ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction()))
                 return;
 
             displayIntentInfo(intent);
@@ -279,7 +279,7 @@ public class AndroidRouter extends RouterImpl {
                         break;
                 }
             }
-
+//            log.info(String.format("networkInfo：%s,newNetworkInfo：%s", networkInfo == null ? "" : networkInfo.toString(), newNetworkInfo == null ? "" : newNetworkInfo.toString()));
             if (isSameNetworkType(networkInfo, newNetworkInfo)) {
                 log.info("No actual network change... ignoring event!");
             } else {

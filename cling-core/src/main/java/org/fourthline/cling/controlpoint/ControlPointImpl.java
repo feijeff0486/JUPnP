@@ -67,6 +67,7 @@ public class ControlPointImpl implements ControlPoint {
         return configuration;
     }
 
+    @Override
     public ProtocolFactory getProtocolFactory() {
         return protocolFactory;
     }

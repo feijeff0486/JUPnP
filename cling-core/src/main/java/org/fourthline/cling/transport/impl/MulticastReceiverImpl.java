@@ -57,10 +57,12 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
         this.configuration = configuration;
     }
 
+    @Override
     public MulticastReceiverConfigurationImpl getConfiguration() {
         return configuration;
     }
 
+    @Override
     synchronized public void init(NetworkInterface networkInterface,
                                   Router router,
                                   NetworkAddressFactory networkAddressFactory,
@@ -88,6 +90,7 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
         }
     }
 
+    @Override
     synchronized public void stop() {
         if (socket != null && !socket.isClosed()) {
             try {
@@ -102,8 +105,8 @@ public class MulticastReceiverImpl implements MulticastReceiver<MulticastReceive
         }
     }
 
+    @Override
     public void run() {
-
         log.fine("Entering blocking receiving loop, listening for UDP datagrams on: " + socket.getLocalAddress());
         while (true) {
 

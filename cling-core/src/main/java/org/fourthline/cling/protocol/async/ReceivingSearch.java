@@ -75,6 +75,7 @@ public class ReceivingSearch extends ReceivingAsync<IncomingSearchRequest> {
         super(upnpService, new IncomingSearchRequest(inputMessage));
     }
 
+    @Override
     protected void execute() throws RouterException {
         if (getUpnpService().getRouter() == null) {
             // TODO: http://mailinglists.945824.n3.nabble.com/rare-NPE-on-start-tp3078213p3142767.html
@@ -301,7 +302,6 @@ public class ReceivingSearch extends ReceivingAsync<IncomingSearchRequest> {
         Collection<Device> devices = getUpnpService().getRegistry().getDevices(deviceType);
         for (Device device : devices) {
             if (device instanceof LocalDevice) {
-
                 if (isAdvertisementDisabled((LocalDevice)device))
                     continue;
 

@@ -13,6 +13,8 @@ import java.io.StringReader;
 import java.util.logging.Logger;
 
 /**
+ * 指定SAXParser为AndroidUPnPSAXParser，解决Could not parse service descriptor问题
+ * @see AndroidUPnPSAXParser
  * <p>
  *
  * @author Jeff
@@ -51,7 +53,6 @@ public class AndroidUDA10ServiceDescriptorBinderSAXImpl extends UDA10ServiceDesc
 
             // Build the immutable descriptor graph
             return (S)descriptor.build(undescribedService.getDevice());
-
         } catch (ValidationException ex) {
             throw ex;
         } catch (Exception ex) {

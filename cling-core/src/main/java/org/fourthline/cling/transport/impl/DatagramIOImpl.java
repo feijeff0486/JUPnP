@@ -97,6 +97,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
         }
     }
 
+    @Override
     public void run() {
         log.fine("Entering blocking receiving loop, listening for UDP datagrams on: " + socket.getLocalAddress());
 
@@ -137,6 +138,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
         }
     }
 
+    @Override
     synchronized public void send(OutgoingDatagramMessage message) {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Sending message from address: " + localAddress);
@@ -150,6 +152,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
         send(packet);
     }
 
+    @Override
     synchronized public void send(DatagramPacket datagram) {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Sending message from address: " + localAddress);

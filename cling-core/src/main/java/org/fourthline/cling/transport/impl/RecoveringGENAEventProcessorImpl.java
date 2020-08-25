@@ -53,6 +53,7 @@ public class RecoveringGENAEventProcessorImpl extends PullGENAEventProcessorImpl
 
     private static Logger log = Logger.getLogger(GENAEventProcessor.class.getName());
 
+    @Override
     public void readBody(IncomingEventRequestMessage requestMessage) throws UnsupportedDataException {
         try {
             super.readBody(requestMessage);

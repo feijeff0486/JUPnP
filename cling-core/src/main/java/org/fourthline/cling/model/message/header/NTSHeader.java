@@ -29,6 +29,7 @@ public class NTSHeader extends UpnpHeader<NotificationSubtype> {
         setValue(type);
     }
 
+    @Override
     public void setString(String s) throws InvalidHeaderException {
         for (NotificationSubtype type : NotificationSubtype.values()) {
             if (s.equals(type.getHeaderString())) {
@@ -42,6 +43,7 @@ public class NTSHeader extends UpnpHeader<NotificationSubtype> {
 
     }
 
+    @Override
     public String getString() {
         return getValue().getHeaderString();
     }
