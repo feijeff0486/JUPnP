@@ -1,0 +1,29 @@
+ext {
+    bintrayName = 'netty-server'
+    artifact = bintrayName
+    libraryName = 'UPnP netty-server library'
+    libraryDescription = 'Provide netty-server support.'
+    libraryVersionCode = upnp_netty_server_version_code
+    libraryVersionName = upnp_netty_server_version_name
+}
+apply from: rootProject.file('gradle/build_library.gradle')
+
+android {
+    defaultConfig {
+        versionCode libraryVersionCode.asType(Integer.class)
+        versionName libraryVersionName
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+//    api project(path: ':cling-core')
+    api 'com.jeff.jframework:tools:0.0.5'
+    implementation 'com.jeff.jframework:core:0.0.3'
+    implementation(name: 'roocore-dumi-release', ext: 'aar')
+}

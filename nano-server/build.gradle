@@ -1,0 +1,26 @@
+ext {
+    bintrayName = 'nano-server'
+    artifact = bintrayName
+    libraryName = 'UPnP nano-server library'
+    libraryDescription = 'Provide nano-server support.'
+    libraryVersionCode = upnp_nano_server_version_code
+    libraryVersionName = upnp_nano_server_version_name
+}
+apply from: rootProject.file('gradle/build_library.gradle')
+
+android {
+    defaultConfig {
+        versionCode libraryVersionCode.asType(Integer.class)
+        versionName libraryVersionName
+    }
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+//    api project(path: ':cling-core')
+}
