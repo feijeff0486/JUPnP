@@ -12,10 +12,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
-
     <Button
         android:id="@+id/btn_client"
         android:text="client"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btn_domy"
+        android:text="domybox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 

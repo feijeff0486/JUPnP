@@ -19,11 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.fourthline.cling.android.AndroidUpnpService;
-import org.fourthline.cling.android.AndroidUpnpServiceImpl;
 import org.fourthline.cling.android.FixedAndroidLogHandler;
-import org.fourthline.cling.controlpoint.ActionCallback;
-import org.fourthline.cling.model.action.ActionInvocation;
-import org.fourthline.cling.model.message.UpnpResponse;
 import org.fourthline.cling.model.message.header.STAllHeader;
 import org.fourthline.cling.model.message.header.UDADeviceTypeHeader;
 import org.fourthline.cling.model.meta.Action;
@@ -33,7 +29,6 @@ import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.model.meta.RemoteService;
 import org.fourthline.cling.model.meta.Service;
 import org.fourthline.cling.model.types.DeviceType;
-import org.fourthline.cling.model.types.InvalidValueException;
 import org.fourthline.cling.model.types.ServiceId;
 import org.fourthline.cling.model.types.UDADeviceType;
 import org.fourthline.cling.model.types.UDAServiceId;
@@ -54,8 +49,8 @@ import java.util.logging.Logger;
  * <a href="mailto:feijeff0486@gmail.com">Contact me</a>
  * <a href="https://github.com/feijeff0486">Follow me</a>
  */
-public class LightControlActivity extends ListActivity {
-    private static final String TAG = "LightControlActivity";
+public class DomyBoxDiscoveryActivity extends ListActivity {
+    private static final String TAG = "DomyBoxDiscoveryActivity";
 
     // DOC:CLASS
     // DOC:SERVICE_BINDING
@@ -76,16 +71,15 @@ public class LightControlActivity extends ListActivity {
 
             // Get ready for future device advertisements
             upnpService.getRegistry().addListener(registryListener);
-            DeviceType deviceType=new UDADeviceType("BinaryLight");
-
+            DeviceType deviceType=new UDADeviceType("RooDiscovery", 1);
             // Now add all devices to the list we already know about
-            for (Device device : upnpService.getRegistry().getDevices()) {
+            for (Device device : upnpService.getRegistry().getDevices(deviceType)) {
                 registryListener.deviceAdded(device);
             }
 
             // Search asynchronously for all devices, they will respond soon
 //            upnpService.getControlPoint().search(new STAllHeader());
-            upnpService.getControlPoint().search(new UDADeviceTypeHeader(deviceType),6);
+            upnpService.getControlPoint().search(new UDADeviceTypeHeader(deviceType));
 //            upnpService.getControlPoint().search(new UDAServiceTypeHeader(new UDAServiceType("Discovery", 1)));
         }
 
@@ -104,7 +98,6 @@ public class LightControlActivity extends ListActivity {
                 new FixedAndroidLogHandler()
         );
         // Now you can enable logging as needed for various categories of Cling:
-//        Logger.getLogger("org.fourthline.cling").setLevel(Level.FINE);
         Logger.getLogger("org.fourthline.cling").setLevel(Level.FINE);
 
         listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
@@ -112,7 +105,7 @@ public class LightControlActivity extends ListActivity {
 
         // This will start the UPnP service if it wasn't already started
         getApplicationContext().bindService(
-                new Intent(this, AndroidUpnpServiceImpl.class),
+                new Intent(this, DomyBoxDiscoveryService.class),
                 serviceConnection,
                 Context.BIND_AUTO_CREATE
         );
@@ -184,11 +177,8 @@ public class LightControlActivity extends ListActivity {
     }
     // DOC:MENU
 
-    private boolean targetValue=true;
-    private int targetKeyCode=24;
+    private ServiceId serviceId = new UDAServiceId("Discovery");
 
-    private ServiceId serviceId = new UDAServiceId("SwitchPower");
-    private ServiceId keyEventServiceId = new UDAServiceId("KeyEventControl");
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         DeviceDisplay deviceDisplay = (DeviceDisplay) l.getItemAtPosition(position);
@@ -201,14 +191,7 @@ public class LightControlActivity extends ListActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Service switchPower;
-                        if ((switchPower = deviceDisplay.getDevice().findService(serviceId)) != null) {
-                            executeAction(upnpService, switchPower,targetValue);
-                        }
-                        Service keyEvent;
-                        if ((keyEvent = deviceDisplay.getDevice().findService(keyEventServiceId)) != null) {
-                            executeKeyEventAction(upnpService, keyEvent,targetKeyCode);
-                        }
+
                     }
                 }
         );
@@ -224,8 +207,6 @@ public class LightControlActivity extends ListActivity {
         /* Discovery performance optimization for very slow Android devices! */
         @Override
         public void remoteDeviceDiscoveryStarted(Registry registry, RemoteDevice device) {
-//            deviceAdded(device);
-
             StringBuilder deviceInfo = new StringBuilder("\nRemoteDevice={\nDisplayString=" + device.getDisplayString());
             // 遍历远程设备的服务Services
             for (RemoteService service : device.getServices()) {
@@ -241,18 +222,10 @@ public class LightControlActivity extends ListActivity {
             deviceInfo.append("}");
 
             Log.d(TAG, "remoteDeviceDiscoveryStarted:" + deviceInfo.toString());
-            Service switchPower;
-            if ((switchPower = device.findService(serviceId)) != null) {
-                Log.d(TAG, "Started remote device discover: " + switchPower);
+            Service domyDiscovery;
+            if ((domyDiscovery = device.findService(serviceId)) != null) {
+                Log.d(TAG, "Started remote device discover: " + domyDiscovery);
                 deviceAdded(device);
-//                executeAction(upnpService, switchPower);
-            }
-
-            Service keyEvent;
-            if ((keyEvent = device.findService(keyEventServiceId)) != null) {
-                Log.d(TAG, "Started remote device discover: " + keyEvent);
-                deviceAdded(device);
-//                executeAction(upnpService, switchPower);
             }
         }
 
@@ -264,7 +237,7 @@ public class LightControlActivity extends ListActivity {
                 @Override
                 public void run() {
                     Toast.makeText(
-                            LightControlActivity.this,
+                            DomyBoxDiscoveryActivity.this,
                             "Discovery failed of '" + device.getDisplayString() + "': "
                                     + (ex != null ? ex.toString() : "Couldn't retrieve device/service descriptors"),
                             Toast.LENGTH_LONG
@@ -287,30 +260,18 @@ public class LightControlActivity extends ListActivity {
 
         @Override
         public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
-            Service switchPower;
-            if ((switchPower = device.findService(serviceId)) != null) {
-                Log.d(TAG, "Service discovered: " + switchPower);
-                deviceAdded(device);
-//                executeAction(upnpService, switchPower);
-            }
-
-            Service keyEvent;
-            if ((keyEvent = device.findService(keyEventServiceId)) != null) {
-                Log.d(TAG, "Service discovered: " + keyEvent);
+            Service domyDiscovery;
+            if ((domyDiscovery = device.findService(serviceId)) != null) {
+                Log.d(TAG, "Service discovered: " + domyDiscovery);
                 deviceAdded(device);
             }
         }
 
         @Override
         public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
-            Service switchPower;
-            if ((switchPower = device.findService(serviceId)) != null) {
-                Log.d(TAG, "Service disappeared: " + switchPower);
-            }
-
-            Service keyEvent;
-            if ((keyEvent = device.findService(keyEventServiceId)) != null) {
-                Log.d(TAG, "Service disappeared: " + keyEvent);
+            Service domyDiscovery;
+            if ((domyDiscovery = device.findService(serviceId)) != null) {
+                Log.d(TAG, "Service disappeared: " + domyDiscovery);
             }
         }
 
@@ -403,93 +364,5 @@ public class LightControlActivity extends ListActivity {
         }
     }
     // DOC:CLASS_END
-    // ...
-
-    void executeAction(AndroidUpnpService upnpService, Service switchPowerService,boolean value) {
-        Action action = switchPowerService.getAction("SetTarget");
-        if (action == null) {
-            Log.e(TAG, "executeAction: action is null return!");
-            return;
-        }
-        ActionInvocation setTargetInvocation =
-                new SetTargetActionInvocation(action,value);
-
-        // Executes asynchronous in the background
-        upnpService.getControlPoint().execute(
-                new ActionCallback(setTargetInvocation) {
-
-                    @Override
-                    public void success(ActionInvocation invocation) {
-                        assert invocation.getOutput().length == 0;
-                        Log.d(TAG, "executeAction::ActionCallback::success Successfully called action!");
-                        targetValue=!targetValue;
-                    }
-
-                    @Override
-                    public void failure(ActionInvocation invocation,
-                                        UpnpResponse operation,
-                                        String defaultMsg) {
-                        Log.e(TAG, "executeAction::ActionCallback::failure " + defaultMsg);
-                    }
-                }
-        );
-    }
-
-    void executeKeyEventAction(AndroidUpnpService upnpService, Service keyEventService, int keyCode) {
-        Action action = keyEventService.getAction("AcceptKeyEvent");
-        if (action == null) {
-            Log.e(TAG, "executeKeyEventAction: action is null return!");
-            return;
-        }
-        ActionInvocation keyEventActionInvocation =
-                new KeyEventActionInvocation(action,keyCode);
-
-        // Executes asynchronous in the background
-        upnpService.getControlPoint().execute(
-                new ActionCallback(keyEventActionInvocation) {
-
-                    @Override
-                    public void success(ActionInvocation invocation) {
-                        assert invocation.getOutput().length == 0;
-                        Log.d(TAG, "executeKeyEventAction::ActionCallback::success Successfully called action!");
-                    }
-
-                    @Override
-                    public void failure(ActionInvocation invocation,
-                                        UpnpResponse operation,
-                                        String defaultMsg) {
-                        Log.e(TAG, "executeKeyEventAction::ActionCallback::failure " + defaultMsg);
-                    }
-                }
-        );
-    }
-
-    static class SetTargetActionInvocation extends ActionInvocation {
-
-        SetTargetActionInvocation(Action action,boolean value) {
-            super(action);
-            try {
-
-                // Throws InvalidValueException if the value is of wrong type
-                setInput("NewTargetValue", value);
-            } catch (InvalidValueException ex) {
-                Log.e(TAG, "SetTargetActionInvocation: " + ex.getMessage());
-            }
-        }
-    }
-
-    static class KeyEventActionInvocation extends ActionInvocation {
-
-        KeyEventActionInvocation(Action action,int keyCode) {
-            super(action);
-            try {
-
-                // Throws InvalidValueException if the value is of wrong type
-                setInput("NewKeyEvent", keyCode);
-            } catch (InvalidValueException ex) {
-                Log.e(TAG, "KeyEventActionInvocation: " + ex.getMessage());
-            }
-        }
-    }
 }
 // DOC:CLASS_END

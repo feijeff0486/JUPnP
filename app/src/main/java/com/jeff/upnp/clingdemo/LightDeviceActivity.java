@@ -29,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.fourthline.cling.android.AndroidUpnpService;
-import org.fourthline.cling.android.AndroidUpnpServiceImpl;
 import org.fourthline.cling.android.FixedAndroidLogHandler;
 import org.fourthline.cling.model.DiscoveryOptions;
 import org.fourthline.cling.model.meta.LocalDevice;
@@ -61,7 +60,6 @@ public class LightDeviceActivity extends Activity implements PropertyChangeListe
     // DOC:SERVICE_BINDING
     private AndroidUpnpService upnpService;
 
-
     private ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
@@ -69,19 +67,20 @@ public class LightDeviceActivity extends Activity implements PropertyChangeListe
             upnpService = (AndroidUpnpService) service;
 
             LocalService<SwitchPower> switchPowerService = getSwitchPowerService();
+//            LocalService<KeyEventControl> keyEventControlService = getKeyEventControlService();
 
             // Register the device when this activity binds to the service for the first time
-            if (switchPowerService == null) {
+            if (switchPowerService == null/*||keyEventControlService==null*/) {
                 try {
                     LocalDevice binaryLightDevice = DeviceFactory.createDevice();
 
                     Toast.makeText(LightDeviceActivity.this, R.string.registeringDevice, Toast.LENGTH_SHORT).show();
                     upnpService.getRegistry().addDevice(binaryLightDevice);
                     //设置发现策略
-                    upnpService.getRegistry().setDiscoveryOptions(DeviceFactory.sUDN,new DiscoveryOptions(true));
+                    upnpService.getRegistry().setDiscoveryOptions(DeviceFactory.sUDN,new DiscoveryOptions(true,true));
 
                     switchPowerService = getSwitchPowerService();
-
+//                    keyEventControlService=getKeyEventControlService();
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Creating BinaryLight device failed", ex);
                     Toast.makeText(LightDeviceActivity.this, R.string.createDeviceFailed, Toast.LENGTH_SHORT).show();
@@ -96,6 +95,8 @@ public class LightDeviceActivity extends Activity implements PropertyChangeListe
             switchPowerService.getManager().getImplementation().getPropertyChangeSupport()
                     .addPropertyChangeListener(LightDeviceActivity.this);
 
+//            keyEventControlService.getManager().getImplementation().getPropertyChangeSupport()
+//                    .addPropertyChangeListener(LightDeviceActivity.this);
         }
 
         @Override
@@ -112,13 +113,15 @@ public class LightDeviceActivity extends Activity implements PropertyChangeListe
          org.seamless.util.logging.LoggingUtil.resetRootHandler(
             new FixedAndroidLogHandler()
          );
-         Logger.getLogger("org.fourthline.cling").setLevel(Level.FINE);
+//         Logger.getLogger("org.fourthline.cling").setLevel(Level.FINE);
+         Logger.getLogger("org.fourthline.cling").setLevel(Level.ALL);
+//         Logger.getLogger("org.fourthline.cling.transport.spi.MulticastReceiver").setLevel(Level.FINE);
         // DOC:LOGGING
 
         setContentView(R.layout.activity_light_device);
 
         getApplicationContext().bindService(
-                new Intent(this, AndroidUpnpServiceImpl.class),
+                new Intent(this, LightDiscoveryService.class),
                 serviceConnection,
                 Context.BIND_AUTO_CREATE
         );
@@ -149,6 +152,18 @@ public class LightDeviceActivity extends Activity implements PropertyChangeListe
                 binaryLightDevice.findService(new UDAServiceType("SwitchPower", 1));
     }
     // DOC:SERVICE_BINDING
+
+    protected LocalService<KeyEventControl> getKeyEventControlService() {
+        if (upnpService == null)
+            return null;
+
+        LocalDevice keyEventDevice;
+        if ((keyEventDevice = upnpService.getRegistry().getLocalDevice(DeviceFactory.sUDN, true)) == null)
+            return null;
+
+        return (LocalService<KeyEventControl>)
+                keyEventDevice.findService(new UDAServiceType("KeyEventControl", 1));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -195,7 +210,7 @@ public class LightDeviceActivity extends Activity implements PropertyChangeListe
     @Override
     public void propertyChange(PropertyChangeEvent event) {
         // This is regular JavaBean eventing, not UPnP eventing!
-        if (event.getPropertyName().equals("status")) {
+        if ("status".equals(event.getPropertyName())) {
             log.info("Turning light: " + event.getNewValue());
             setLightbulb((Boolean) event.getNewValue());
         }

@@ -2,6 +2,9 @@ package com.jeff.upnp.clingdemo;
 
 import android.util.Log;
 
+import com.jeff.jframework.tools.StringUtils;
+import com.jeff.jframework.tools.preference.PreferencesUtils;
+
 import org.fourthline.cling.binding.LocalServiceBindingException;
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.model.DefaultServiceManager;
@@ -31,7 +34,18 @@ import java.util.UUID;
  */
 public final class DeviceFactory {
     private static final String TAG = "DeviceFactory";
-    public static final UDN sUDN=new UDN(UUID.randomUUID());
+    /**
+     * todo:这样生成的UDN不稳定，第一次生成后保存至本地，之后从本地取值
+     */
+    public static  UDN sUDN=new UDN(UUID.randomUUID());
+    static {
+        String udn=PreferencesUtils.getPreference().getString("DOMYBOX_UDN");
+        if (StringUtils.isEmpty(udn)){
+            udn=UUID.randomUUID().toString();
+            PreferencesUtils.getPreference().put("DOMYBOX_UDN",udn);
+        }
+        sUDN=new UDN(UUID.fromString(udn));
+    }
 
     public static LocalDevice createDevice()
             throws ValidationException, LocalServiceBindingException, IOException {
@@ -54,7 +68,7 @@ public final class DeviceFactory {
                         )
                 );
 
-        Icon icon =createDefaultDeviceIcon();
+//        Icon icon =createDefaultDeviceIcon();
 //                new Icon(
 //                        "image/png", 48, 48, 8, URI.create("file:///android_asset/icon.png")
 //                );
@@ -66,15 +80,20 @@ public final class DeviceFactory {
                 new DefaultServiceManager(switchPowerService, SwitchPower.class)
         );
 
-        return new LocalDevice(identity, type, details, icon, switchPowerService);
+//        LocalService<KeyEventControl> keyEventService =
+//                new AnnotationLocalServiceBinder().read(KeyEventControl.class);
+//
+//        keyEventService.setManager(
+//                new DefaultServiceManager(keyEventService, KeyEventControl.class)
+//        );
 
-    /* Several services can be bound to the same device:
-    return new LocalDevice(
-            identity, type, details, icon,
-            new LocalService[] {switchPowerService, myOtherService}
-    );
-    */
+        return new LocalDevice(identity, type, details, switchPowerService);
 
+        // Several services can be bound to the same device:
+//        return new LocalDevice(
+//                identity, type, details,
+//                new LocalService[] {switchPowerService, keyEventService}
+//        );
     }
 
     static Icon createDefaultDeviceIcon() {
