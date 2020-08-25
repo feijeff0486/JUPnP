@@ -2,7 +2,6 @@ apply plugin: 'java-library'
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    //    implementation 'org.seamless:seamless-swing:1.1.2'
     implementation 'javax.enterprise:cdi-api:1.2'
     implementation project(path: ':cling-core')
     implementation files('libs/seamless-swing-1.1.2.jar')

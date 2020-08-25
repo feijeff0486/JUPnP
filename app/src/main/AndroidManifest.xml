@@ -25,6 +25,7 @@
         <service android:name=".BinaryLightService" />
         <service android:name=".LightDiscoveryService" />
         <service android:name=".DomyBoxDiscoveryService" />
+        <service android:name="org.fourthline.cling.android.AndroidUpnpServiceImpl"/>
     </application>
 
 </manifest>

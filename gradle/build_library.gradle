@@ -48,7 +48,7 @@ android {
             //代码压缩、混淆
             minifyEnabled false
             //zipalign(字节码对齐)优化
-            zipAlignEnabled false
+            zipAlignEnabled true
 
 //            proguardFile getDefaultProguardFile('proguard-android-optimize.txt')
 //            // NOTE: default rules for android library if this file exists
