@@ -22,7 +22,6 @@ repositories {
 }
 
 dependencies {
-//    api project(path: ':cling-core')
     api 'com.jeff.jframework:tools:0.0.5'
     implementation 'com.jeff.jframework:core:0.0.3'
     implementation(name: 'roocore-dumi-release', ext: 'aar')

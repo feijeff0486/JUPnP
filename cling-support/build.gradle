@@ -18,6 +18,5 @@ dependencies {
         println('[cling-support] apply cling-core from local module.')
         api project(path: ':cling-core')
     }
-    implementation project(path: ':cling-core')
     implementation files('libs/seamless-swing-1.1.2.jar')
 }

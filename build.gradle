@@ -27,6 +27,7 @@ buildscript {
         maven { url 'https://maven.google.com' }
         maven { url 'https://jitpack.io' }
         maven { url 'https://dl.bintray.com/feijeff0486/JFramework/' }
+        maven { url 'https://dl.bintray.com/feijeff0486/JUPnP/' }
     }
 
     dependencies {
@@ -53,6 +54,7 @@ allprojects {
         google()
         jcenter()
         maven { url 'https://dl.bintray.com/feijeff0486/JFramework/' }
+        maven { url 'https://dl.bintray.com/feijeff0486/JUPnP/' }
         maven { url 'https://jitpack.io' }
         maven {
             url 'http://www.idescout.com/maven/repo/'
