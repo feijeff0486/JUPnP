@@ -1,0 +1,28 @@
+/**
+ * Java module library base gradle file
+ * Optional java libraries gradle file
+ *
+ * Simply apply from: rootProject.file('gradle/build_java_library.gradle') if needed
+ * if enableBintray=true you must add apply after module build.gradle ext{}*
+ */
+String moduleName = project.name
+
+log(moduleName, "apply as java library")
+apply plugin: 'java-library'
+
+def log(String tag, String msg) {
+    println("java-lib [" + tag + "]: " + msg)
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+sourceCompatibility = "8"
+targetCompatibility = "8"
+
+if (enableBintray.toBoolean()) {
+    println('[build_java_library] apply gradle[install,bintray]')
+    apply from: rootProject.file('gradle/install.gradle')
+    apply from: rootProject.file('gradle/bintray.gradle')
+}

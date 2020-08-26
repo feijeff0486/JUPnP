@@ -1,4 +1,12 @@
-apply plugin: 'java-library'
+ext {
+    bintrayName = 'cling-core'
+    artifact = bintrayName
+    libraryName = 'UPnP cling-core library'
+    libraryDescription = 'Provide cling-core support.'
+    libraryVersionCode = upnp_cling_core_version_code
+    libraryVersionName = upnp_cling_core_version_name
+}
+apply from: rootProject.file('gradle/build_java_library.gradle')
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -18,6 +26,3 @@ dependencies {
     implementation files('libs/slf4j-api-1.6.1.jar')
     implementation files('libs/slf4j-jdk14-1.6.1.jar')
 }
-
-sourceCompatibility = "8"
-targetCompatibility = "8"

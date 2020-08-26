@@ -16,5 +16,11 @@ android {
 }
 
 dependencies {
-    api project(path: ':cling-core')
+    if (applyFromBintrayRepo.toBoolean()) {
+        println('[cling-android] apply cling-core from BintrayRepo.')
+        api 'com.jeff.jupnp:cling-core:2.1.2'
+    } else {
+        println('[cling-android] apply cling-core from local module.')
+        api project(path: ':cling-core')
+    }
 }

@@ -1,11 +1,23 @@
-apply plugin: 'java-library'
+ext {
+    bintrayName = 'cling-support'
+    artifact = bintrayName
+    libraryName = 'UPnP cling-support library'
+    libraryDescription = 'Provide cling-support support.'
+    libraryVersionCode = upnp_cling_support_version_code
+    libraryVersionName = upnp_cling_support_version_name
+}
+apply from: rootProject.file('gradle/build_java_library.gradle')
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'javax.enterprise:cdi-api:1.2'
+    if (applyFromBintrayRepo.toBoolean()) {
+        println('[cling-support] apply cling-core from BintrayRepo.')
+        api 'com.jeff.jupnp:cling-core:2.1.2'
+    } else {
+        println('[cling-support] apply cling-core from local module.')
+        api project(path: ':cling-core')
+    }
     implementation project(path: ':cling-core')
     implementation files('libs/seamless-swing-1.1.2.jar')
 }
-
-sourceCompatibility = "8"
-targetCompatibility = "8"

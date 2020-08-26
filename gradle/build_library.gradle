@@ -7,11 +7,11 @@
  */
 String moduleName = project.name
 
-log(moduleName, "apply as library")
+log(moduleName, "apply as android library")
 apply plugin: 'com.android.library'
 
 def log(String tag, String msg) {
-    println("lib-" + tag + "-config: " + msg)
+    println("android-lib [" + tag + "]: " + msg)
 }
 
 def static buildTime() {
