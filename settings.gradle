@@ -1,4 +1,4 @@
-rootProject.name='ClingDemo'
+rootProject.name='JUPnP'
 include ':app'
 include ':cling-core'
 include ':cling-android'
