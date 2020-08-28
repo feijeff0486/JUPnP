@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 /**
  * 控制点
  * <p>
+ *
  * @author Jeff
  * @date 2020/08/21 18:23
  *
@@ -76,7 +77,7 @@ public class LightControlActivity extends ListActivity {
 
             // Get ready for future device advertisements
             upnpService.getRegistry().addListener(registryListener);
-            DeviceType deviceType=new UDADeviceType("BinaryLight");
+            DeviceType deviceType = new UDADeviceType("BinaryLight");
 
             // Now add all devices to the list we already know about
             for (Device device : upnpService.getRegistry().getDevices()) {
@@ -85,8 +86,8 @@ public class LightControlActivity extends ListActivity {
 
             // Search asynchronously for all devices, they will respond soon
 //            upnpService.getControlPoint().search(new STAllHeader());
-            upnpService.getControlPoint().search(new UDADeviceTypeHeader(deviceType),6);
-//            upnpService.getControlPoint().search(new UDAServiceTypeHeader(new UDAServiceType("Discovery", 1)));
+            upnpService.getControlPoint().search(new UDADeviceTypeHeader(deviceType));
+//            upnpService.getControlPoint().search(new UDAServiceTypeHeader(new UDAServiceType("SwitchPower", 1)));
         }
 
         @Override
@@ -184,11 +185,12 @@ public class LightControlActivity extends ListActivity {
     }
     // DOC:MENU
 
-    private boolean targetValue=true;
-    private int targetKeyCode=24;
+    private boolean targetValue = true;
+    private int targetKeyCode = 24;
 
     private ServiceId serviceId = new UDAServiceId("SwitchPower");
     private ServiceId keyEventServiceId = new UDAServiceId("KeyEventControl");
+
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         DeviceDisplay deviceDisplay = (DeviceDisplay) l.getItemAtPosition(position);
@@ -203,11 +205,12 @@ public class LightControlActivity extends ListActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Service switchPower;
                         if ((switchPower = deviceDisplay.getDevice().findService(serviceId)) != null) {
-                            executeAction(upnpService, switchPower,targetValue);
+                            executeGetStatusAction(upnpService,switchPower);
+                            executeAction(upnpService, switchPower, targetValue);
                         }
                         Service keyEvent;
                         if ((keyEvent = deviceDisplay.getDevice().findService(keyEventServiceId)) != null) {
-                            executeKeyEventAction(upnpService, keyEvent,targetKeyCode);
+                            executeKeyEventAction(upnpService, keyEvent, targetKeyCode);
                         }
                     }
                 }
@@ -230,10 +233,10 @@ public class LightControlActivity extends ListActivity {
             // 遍历远程设备的服务Services
             for (RemoteService service : device.getServices()) {
                 deviceInfo.append(",\nService={\nServiceId=" + service.getServiceId())
-                        .append(",\nControlURI="+service.getControlURI())
-                        .append(",\nDescriptorURI="+service.getDescriptorURI())
-                        .append(",\nEventSubscriptionURI="+service.getEventSubscriptionURI());
-                for (Action action:service.getActions()) {
+                        .append(",\nControlURI=" + service.getControlURI())
+                        .append(",\nDescriptorURI=" + service.getDescriptorURI())
+                        .append(",\nEventSubscriptionURI=" + service.getEventSubscriptionURI());
+                for (Action action : service.getActions()) {
                     deviceInfo.append(",\nAction={").append(action.toString()).append("}");
                 }
                 deviceInfo.append("}");
@@ -366,15 +369,15 @@ public class LightControlActivity extends ListActivity {
         // DOC:DETAILS
         public String getDetailsMessage() {
             StringBuilder sb = new StringBuilder();
-            if (getDevice().isFullyHydrated()) {
-                sb.append(getDevice().getDisplayString());
-                sb.append("\n\n");
-                for (Service service : getDevice().getServices()) {
-                    sb.append(service.getServiceType()).append("\n");
-                }
-            } else {
-                sb.append(getString(R.string.deviceDetailsNotYetAvailable));
+//            if (getDevice().isFullyHydrated()) {
+            sb.append(getDevice().getDisplayString());
+            sb.append("\n\n");
+            for (Service service : getDevice().getServices()) {
+                sb.append(service.getServiceType()).append("\n");
             }
+//            } else {
+//                sb.append(getString(R.string.deviceDetailsNotYetAvailable));
+//            }
             return sb.toString();
         }
         // DOC:DETAILS
@@ -399,20 +402,20 @@ public class LightControlActivity extends ListActivity {
                             ? getDevice().getDetails().getFriendlyName()
                             : getDevice().getDisplayString();
             // Display a little star while the device is being loaded (see performance optimization earlier)
-            return device.isFullyHydrated() ? name : name + " *";
+            return device.isFullyHydrated() ? name + "[" + getDevice().getIpAddress() + "]" : name + "[" + getDevice().getIpAddress() + "] *";
         }
     }
     // DOC:CLASS_END
     // ...
 
-    void executeAction(AndroidUpnpService upnpService, Service switchPowerService,boolean value) {
+    void executeAction(AndroidUpnpService upnpService, Service switchPowerService, boolean value) {
         Action action = switchPowerService.getAction("SetTarget");
         if (action == null) {
             Log.e(TAG, "executeAction: action is null return!");
             return;
         }
         ActionInvocation setTargetInvocation =
-                new SetTargetActionInvocation(action,value);
+                new SetTargetActionInvocation(action, value);
 
         // Executes asynchronous in the background
         upnpService.getControlPoint().execute(
@@ -422,7 +425,7 @@ public class LightControlActivity extends ListActivity {
                     public void success(ActionInvocation invocation) {
                         assert invocation.getOutput().length == 0;
                         Log.d(TAG, "executeAction::ActionCallback::success Successfully called action!");
-                        targetValue=!targetValue;
+//                        targetValue = !targetValue;
                     }
 
                     @Override
@@ -442,7 +445,7 @@ public class LightControlActivity extends ListActivity {
             return;
         }
         ActionInvocation keyEventActionInvocation =
-                new KeyEventActionInvocation(action,keyCode);
+                new KeyEventActionInvocation(action, keyCode);
 
         // Executes asynchronous in the background
         upnpService.getControlPoint().execute(
@@ -464,9 +467,39 @@ public class LightControlActivity extends ListActivity {
         );
     }
 
+    void executeGetStatusAction(AndroidUpnpService upnpService, Service keyEventService) {
+        Action action = keyEventService.getAction("GetTarget");
+        if (action == null) {
+            Log.e(TAG, "executeGetStatusAction: action is null return!");
+            return;
+        }
+        ActionInvocation getTargetActionInvocation =
+                new GetTargetActionInvocation(action,targetValue);
+
+        // Executes asynchronous in the background
+        upnpService.getControlPoint().execute(
+                new ActionCallback(getTargetActionInvocation) {
+
+                    @Override
+                    public void success(ActionInvocation invocation) {
+                        assert invocation.getOutput().length == 0;
+                        targetValue=!targetValue;
+                        Log.d(TAG, "executeGetStatusAction::ActionCallback::success Successfully called action!");
+                    }
+
+                    @Override
+                    public void failure(ActionInvocation invocation,
+                                        UpnpResponse operation,
+                                        String defaultMsg) {
+                        Log.e(TAG, "executeGetStatusAction::ActionCallback::failure " + defaultMsg);
+                    }
+                }
+        );
+    }
+
     static class SetTargetActionInvocation extends ActionInvocation {
 
-        SetTargetActionInvocation(Action action,boolean value) {
+        SetTargetActionInvocation(Action action, boolean value) {
             super(action);
             try {
 
@@ -480,7 +513,7 @@ public class LightControlActivity extends ListActivity {
 
     static class KeyEventActionInvocation extends ActionInvocation {
 
-        KeyEventActionInvocation(Action action,int keyCode) {
+        KeyEventActionInvocation(Action action, int keyCode) {
             super(action);
             try {
 
@@ -488,6 +521,20 @@ public class LightControlActivity extends ListActivity {
                 setInput("NewKeyEvent", keyCode);
             } catch (InvalidValueException ex) {
                 Log.e(TAG, "KeyEventActionInvocation: " + ex.getMessage());
+            }
+        }
+    }
+
+    static class GetTargetActionInvocation extends ActionInvocation {
+
+        GetTargetActionInvocation(Action action, boolean value) {
+            super(action);
+            try {
+
+                // Throws InvalidValueException if the value is of wrong type
+                setOutput("RetTargetValue", value);
+            } catch (InvalidValueException ex) {
+                Log.e(TAG, "GetTargetActionInvocation: " + ex.getMessage());
             }
         }
     }

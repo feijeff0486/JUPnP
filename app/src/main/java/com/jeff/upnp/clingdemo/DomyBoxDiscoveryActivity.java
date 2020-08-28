@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 /**
  * 控制点
  * <p>
+ *
  * @author Jeff
  * @date 2020/08/21 18:23
  *
@@ -71,7 +72,7 @@ public class DomyBoxDiscoveryActivity extends ListActivity {
 
             // Get ready for future device advertisements
             upnpService.getRegistry().addListener(registryListener);
-            DeviceType deviceType=new UDADeviceType("RooDiscovery", 1);
+            DeviceType deviceType = new UDADeviceType("RooDiscovery", 1);
             // Now add all devices to the list we already know about
             for (Device device : upnpService.getRegistry().getDevices(deviceType)) {
                 registryListener.deviceAdded(device);
@@ -211,10 +212,10 @@ public class DomyBoxDiscoveryActivity extends ListActivity {
             // 遍历远程设备的服务Services
             for (RemoteService service : device.getServices()) {
                 deviceInfo.append(",\nService={\nServiceId=" + service.getServiceId())
-                        .append(",\nControlURI="+service.getControlURI())
-                        .append(",\nDescriptorURI="+service.getDescriptorURI())
-                        .append(",\nEventSubscriptionURI="+service.getEventSubscriptionURI());
-                for (Action action:service.getActions()) {
+                        .append(",\nControlURI=" + service.getControlURI())
+                        .append(",\nDescriptorURI=" + service.getDescriptorURI())
+                        .append(",\nEventSubscriptionURI=" + service.getEventSubscriptionURI());
+                for (Action action : service.getActions()) {
                     deviceInfo.append(",\nAction={").append(action.toString()).append("}");
                 }
                 deviceInfo.append("}");
@@ -327,15 +328,15 @@ public class DomyBoxDiscoveryActivity extends ListActivity {
         // DOC:DETAILS
         public String getDetailsMessage() {
             StringBuilder sb = new StringBuilder();
-            if (getDevice().isFullyHydrated()) {
-                sb.append(getDevice().getDisplayString());
-                sb.append("\n\n");
-                for (Service service : getDevice().getServices()) {
-                    sb.append(service.getServiceType()).append("\n");
-                }
-            } else {
-                sb.append(getString(R.string.deviceDetailsNotYetAvailable));
+//            if (getDevice().isFullyHydrated()) {
+            sb.append(getDevice().getDisplayString());
+            sb.append("\n\n");
+            for (Service service : getDevice().getServices()) {
+                sb.append(service.getServiceType()).append("\n");
             }
+//            } else {
+//                sb.append(getString(R.string.deviceDetailsNotYetAvailable));
+//            }
             return sb.toString();
         }
         // DOC:DETAILS
@@ -360,7 +361,7 @@ public class DomyBoxDiscoveryActivity extends ListActivity {
                             ? getDevice().getDetails().getFriendlyName()
                             : getDevice().getDisplayString();
             // Display a little star while the device is being loaded (see performance optimization earlier)
-            return device.isFullyHydrated() ? name : name + " *";
+            return device.isFullyHydrated() ? name + "[" + getDevice().getIpAddress() + "]" : name + "[" + getDevice().getIpAddress() + "] *";
         }
     }
     // DOC:CLASS_END
