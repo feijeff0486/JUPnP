@@ -42,6 +42,7 @@ public class DatagramProcessorImpl implements DatagramProcessor {
 
     private static Logger log = Logger.getLogger(DatagramProcessor.class.getName());
 
+    @Override
     public IncomingDatagramMessage read(InetAddress receivedOnAddress, DatagramPacket datagram) throws UnsupportedDataException {
 
         try {
@@ -66,6 +67,7 @@ public class DatagramProcessorImpl implements DatagramProcessor {
         }
     }
 
+    @Override
     public DatagramPacket write(OutgoingDatagramMessage message) throws UnsupportedDataException {
 
         StringBuilder statusLine = new StringBuilder();

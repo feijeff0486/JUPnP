@@ -92,6 +92,8 @@ public class ReceivingNotification extends ReceivingAsync<IncomingNotificationRe
         RemoteDevice rd;
         try {
             rd = new RemoteDevice(rdIdentity);
+            // set ipAddress for remote device
+            rd.setIpAddress(getInputMessage().getSourceAddress().getHostAddress());
         } catch (ValidationException ex) {
             log.warning("Validation errors of device during discovery: " + rdIdentity);
             for (ValidationError validationError : ex.getErrors()) {

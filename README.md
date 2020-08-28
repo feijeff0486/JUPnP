@@ -28,7 +28,7 @@ implementation 'com.jeff.jupnp:cling-support:2.1.2'
 
 ## Cling讲解
 ### API Overview
-![api_overview](http://static.welovting.xyz/images/cling_api_overview.png)
+![api_overview](https://github.com/feijeff0486/JUPnP/blob/master/img/api_overview.png)
 
 ### Metamodel Overview
-![metamodel_overview](http://static.welovting.xyz/images/cling_metamodel_overview.png)
+![metamodel_overview](https://github.com/feijeff0486/JUPnP/blob/master/img/metamodel_overview.png)

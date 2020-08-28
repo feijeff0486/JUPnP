@@ -56,6 +56,8 @@ public abstract class Device<DI extends DeviceIdentity, D extends Device, S exte
     // Package mutable state
     private D parentDevice;
 
+    private String ipAddress;
+
     public Device(DI identity) throws ValidationException {
         this(identity, null, null, null, null, null);
     }
@@ -444,6 +446,14 @@ public abstract class Device<DI extends DeviceIdentity, D extends Device, S exte
     public abstract S[] toServiceArray(Collection<S> col);
 
     public abstract Resource[] discoverResources(Namespace namespace);
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 
     @Override
     public String toString() {

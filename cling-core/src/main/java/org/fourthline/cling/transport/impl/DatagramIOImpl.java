@@ -67,10 +67,12 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
         this.configuration = configuration;
     }
 
+    @Override
     public DatagramIOConfigurationImpl getConfiguration() {
         return configuration;
     }
 
+    @Override
     synchronized public void init(InetAddress bindAddress, Router router, DatagramProcessor datagramProcessor) throws InitializationException {
 
         this.router = router;
@@ -91,6 +93,7 @@ public class DatagramIOImpl implements DatagramIO<DatagramIOConfigurationImpl> {
         }
     }
 
+    @Override
     synchronized public void stop() {
         if (socket != null && !socket.isClosed()) {
             socket.close();

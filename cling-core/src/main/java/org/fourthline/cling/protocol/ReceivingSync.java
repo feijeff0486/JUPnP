@@ -59,6 +59,7 @@ public abstract class ReceivingSync<IN extends StreamRequestMessage, OUT extends
         return outputMessage;
     }
 
+    @Override
     final protected void execute() throws RouterException {
         outputMessage = executeSync();
 

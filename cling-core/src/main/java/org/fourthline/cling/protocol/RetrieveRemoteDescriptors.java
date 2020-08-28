@@ -70,7 +70,7 @@ public class RetrieveRemoteDescriptors implements Runnable {
     private final UpnpService upnpService;
     private RemoteDevice rd;
 
-    private static final Set<URL> activeRetrievals = new CopyOnWriteArraySet();
+    private static final Set<URL> activeRetrievals = new CopyOnWriteArraySet<>();
     protected List<UDN> errorsAlreadyLogged = new ArrayList<>();
 
     public RetrieveRemoteDescriptors(UpnpService upnpService, RemoteDevice rd) {
@@ -82,6 +82,7 @@ public class RetrieveRemoteDescriptors implements Runnable {
         return upnpService;
     }
 
+    @Override
     public void run() {
 
         URL deviceURL = rd.getIdentity().getDescriptorURL();
@@ -188,7 +189,7 @@ public class RetrieveRemoteDescriptors implements Runnable {
     }
 
     protected void describe(String descriptorXML) throws RouterException {
-        log.fine("descriptorXML: "+descriptorXML);
+//        log.fine("descriptorXML: "+descriptorXML);
 
         boolean notifiedStart = false;
         RemoteDevice describedDevice = null;
@@ -200,6 +201,7 @@ public class RetrieveRemoteDescriptors implements Runnable {
                     rd,
                     descriptorXML
             );
+            describedDevice.setIpAddress(rd.getIpAddress());
 
             log.fine("Remote device described (without services) notifying listeners: " + describedDevice);
             notifiedStart = getUpnpService().getRegistry().notifyDiscoveryStart(describedDevice);
@@ -218,6 +220,7 @@ public class RetrieveRemoteDescriptors implements Runnable {
                     );
                 return;
             } else {
+                hydratedDevice.setIpAddress(rd.getIpAddress());
                 log.fine("Adding fully hydrated remote device to registry: " + hydratedDevice);
                 // The registry will do the right thing: A new root device is going to be added, if it's
                 // already present or we just received the descriptor again (because we got an embedded

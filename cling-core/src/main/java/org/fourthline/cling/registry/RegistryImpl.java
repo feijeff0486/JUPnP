@@ -194,22 +194,27 @@ public class RegistryImpl implements Registry {
         return remoteItems.update(rdIdentity);
     }
 
+    @Override
     synchronized public boolean removeDevice(LocalDevice localDevice) {
         return localItems.remove(localDevice);
     }
 
+    @Override
     synchronized public boolean removeDevice(RemoteDevice remoteDevice) {
         return remoteItems.remove(remoteDevice);
     }
 
+    @Override
     synchronized public void removeAllLocalDevices() {
         localItems.removeAll();
     }
 
+    @Override
     synchronized public void removeAllRemoteDevices() {
         remoteItems.removeAll();
     }
 
+    @Override
     synchronized public boolean removeDevice(UDN udn) {
         Device device = getDevice(udn, true);
         if (device != null && device instanceof LocalDevice)
